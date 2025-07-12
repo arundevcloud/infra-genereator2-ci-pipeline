@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Cloud, Layers, Monitor, History, Save, Settings, Sparkles, Zap, Shield, DollarSign } from 'lucide-react';
+import { Cloud, Layers, Monitor, History, Save, Settings, Sparkles, Zap, Shield, DollarSign, GitBranch } from 'lucide-react';
 import { useBasicAuth } from '../../contexts/BasicAuthContext';
 import EnhancedHeader from './EnhancedHeader';
 import EnhancedDashboard from './EnhancedDashboard';

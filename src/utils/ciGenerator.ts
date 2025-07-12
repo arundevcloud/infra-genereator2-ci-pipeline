@@ -42,6 +42,50 @@ interface CIConfig {
   };
 }
 
+export const getDefaultCIConfig = (): CIConfig => {
+  return {
+    projectName: 'my-app',
+    gitRepo: '',
+    branch: 'main',
+    buildTriggers: {
+      onPush: true,
+      onPR: true,
+      onTag: true,
+      manual: true
+    },
+    docker: {
+      frontend: {
+        enabled: true,
+        dockerfile: 'frontend/Dockerfile',
+        context: './frontend',
+        buildArgs: {},
+        platforms: ['linux/amd64', 'linux/arm64']
+      },
+      backend: {
+        enabled: true,
+        dockerfile: 'backend/Dockerfile',
+        context: './backend',
+        buildArgs: {},
+        platforms: ['linux/amd64', 'linux/arm64']
+      }
+    },
+    registries: [
+      {
+        type: 'gcr',
+        registry: 'gcr.io',
+        repository: 'project-id/app-name',
+        enabled: true
+      }
+    ],
+    scanning: {
+      enabled: true,
+      failOnHigh: false,
+      failOnCritical: true
+    },
+    notifications: {}
+  };
+};
+
 export const generateCIFiles = (config: CIConfig) => {
   const files: { path: string; content: string }[] = [];
 

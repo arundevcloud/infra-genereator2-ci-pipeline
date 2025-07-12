@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Cloud, Layers, Monitor, History, Save, Settings, Sparkles, Zap, Shield, DollarSign, GitBranch } from 'lucide-react';
+import { getDefaultCIConfig } from '../../utils/ciGenerator';
 import { useBasicAuth } from '../../contexts/BasicAuthContext';
 import EnhancedHeader from './EnhancedHeader';
 import EnhancedDashboard from './EnhancedDashboard';
@@ -142,7 +143,7 @@ const EnhancedMainApp: React.FC = () => {
   const [githubConfig, setGithubConfig] = useState<GitHubConfig>(initialState.githubConfig);
   const [k8sConfig, setK8sConfig] = useState<K8sConfig>(initialState.k8sConfig);
   const [k8sGithubConfig, setK8sGithubConfig] = useState<GitHubConfig>(initialState.k8sGithubConfig);
-  const [ciConfig, setCiConfig] = useState<CIConfig>(getDefaultCIConfig());
+  const [ciConfig, setCiConfig] = useState<CIConfig>(getDefaultCIConfig);
   const [activeCITab, setActiveCITab] = useState<CITab>('ci-config');
   const [deploymentStatus, setDeploymentStatus] = useState<'idle' | 'deploying' | 'success' | 'error'>('idle');
   const [currentDeploymentId, setCurrentDeploymentId] = useState<string | null>(null);
@@ -355,50 +356,6 @@ const EnhancedMainApp: React.FC = () => {
     }
   ];
 
-  function getDefaultCIConfig(): CIConfig {
-    return {
-      projectName: 'my-app',
-      gitRepo: '',
-      branch: 'main',
-      buildTriggers: {
-        onPush: true,
-        onPR: true,
-        onTag: true,
-        manual: true
-      },
-      docker: {
-        frontend: {
-          enabled: true,
-          dockerfile: 'frontend/Dockerfile',
-          context: './frontend',
-          buildArgs: {},
-          platforms: ['linux/amd64', 'linux/arm64']
-        },
-        backend: {
-          enabled: true,
-          dockerfile: 'backend/Dockerfile',
-          context: './backend',
-          buildArgs: {},
-          platforms: ['linux/amd64', 'linux/arm64']
-        }
-      },
-      registries: [
-        {
-          type: 'gcr',
-          registry: 'gcr.io',
-          repository: 'project-id/app-name',
-          enabled: true
-        }
-      ],
-      scanning: {
-        enabled: true,
-        failOnHigh: false,
-        failOnCritical: true
-      },
-      notifications: {}
-    };
-  }
-
   const renderMainContent = () => {
     switch (mainTab) {
       case 'dashboard':
@@ -533,19 +490,6 @@ const EnhancedMainApp: React.FC = () => {
               )}
               
               {activeAppTab === 'k8s-deploy' && (
-                <K8sWorkflowStatus
-                  githubConfig={k8sGithubConfig}
-                  k8sConfig={k8sConfig}
-                  status={deploymentStatus}
-                  onStatusChange={handleDeploymentStatusChange}
-                  onBack={() => setActiveAppTab('k8s-github')}
-                  onDeploymentStart={(workflowUrl) => handleDeploymentStart('application', k8sConfig, `${k8sGithubConfig.owner}/${k8sGithubConfig.repo}`, workflowUrl)}
-                />
-              )}
-            </div>
-          </div>
-        );
-
       case 'ci-pipeline':
         return (
           <div className="space-y-6">
@@ -603,6 +547,19 @@ const EnhancedMainApp: React.FC = () => {
                 />
               )}
             </div>
+          </div>
+        );
+
+      case 'ci-pipeline':
+        return (
+          <div className="text-center py-20">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">CI/CD Pipeline</h2>
+            <p className="text-gray-600 mb-8">
+              Automated build, test, and deployment pipeline for your applications.
+            </p>
+            <p className="text-sm text-gray-500">
+              Full CI/CD implementation coming soon...
+            </p>
           </div>
         );
 
@@ -694,7 +651,7 @@ const EnhancedMainApp: React.FC = () => {
               const isActive = mainTab === tab.id;
               const isEnabled = tab.id === 'plugins' || tab.id === 'dashboard' || 
                               ['infrastructure', 'application', 'resources', 'history', 'configurations'].includes(tab.id) ||
-                              enabledPlugins.includes(tab.id);
+                              tab.id === 'ci-pipeline' || enabledPlugins.includes(tab.id);
               
               return (
                 <button
@@ -723,7 +680,7 @@ const EnhancedMainApp: React.FC = () => {
                       <div className="text-xs opacity-75">{tab.description}</div>
                     </div>
                     
-                    {!isEnabled && !['plugins', 'dashboard', 'infrastructure', 'application', 'resources', 'history', 'configurations'].includes(tab.id) && (
+                    {!isEnabled && !['plugins', 'dashboard', 'infrastructure', 'application', 'ci-pipeline', 'resources', 'history', 'configurations'].includes(tab.id) && (
                       <StatusBadge status="warning" text="Plugin" size="sm" />
                     )}
                   </div>

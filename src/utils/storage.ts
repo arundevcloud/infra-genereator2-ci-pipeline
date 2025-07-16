@@ -31,7 +31,6 @@ interface K8sConfig {
   manifests: ManifestConfig[];
 }
 
-type DeploymentMode = 'infrastructure' | 'application';
 type InfraTab = 'config' | 'terraform' | 'github' | 'deploy';
 type AppTab = 'k8s-config' | 'k8s-manifest' | 'k8s-github' | 'k8s-deploy';
 
@@ -40,7 +39,6 @@ interface AppState {
   githubConfig: GitHubConfig;
   k8sConfig: K8sConfig;
   k8sGithubConfig: GitHubConfig;
-  deploymentMode: DeploymentMode;
   activeInfraTab: InfraTab;
   activeAppTab: AppTab;
   lastSaved: string;
@@ -118,7 +116,6 @@ export const loadAppState = (): AppState => {
     githubConfig: defaultGitHubConfig,
     k8sConfig: defaultK8sConfig,
     k8sGithubConfig: defaultGitHubConfig,
-    deploymentMode: 'infrastructure',
     activeInfraTab: 'config',
     activeAppTab: 'k8s-config',
     lastSaved: new Date().toISOString()
@@ -148,10 +145,6 @@ export const saveK8sConfig = (config: K8sConfig): void => {
 
 export const saveK8sGitHubConfig = (config: GitHubConfig): void => {
   saveAppState({ k8sGithubConfig: config });
-};
-
-export const saveDeploymentMode = (mode: DeploymentMode): void => {
-  saveAppState({ deploymentMode: mode });
 };
 
 export const saveActiveTab = (infraTab: InfraTab, appTab: AppTab): void => {
